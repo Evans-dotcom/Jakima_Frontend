@@ -1,0 +1,414 @@
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <div class="sidebar-brand">
+      <i class="fas fa-building"></i>
+      <span>Jakima Admin</span>
+    </div>
+    <nav class="sidebar-nav">
+      <button *ngFor="let item of menuItems"
+        class="nav-item"
+        [class.active]="activeSection === item.id"
+        (click)="setSection(item.id)">
+        <i [class]="item.icon"></i>
+        <span>{{ item.label }}</span>
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="back-btn" (click)="goToWebsite()">
+        <i class="fas fa-arrow-left"></i>
+        <span>Back to Website</span>
+      </button>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+    <header class="admin-header">
+      <div class="header-left">
+        <h1>{{ activeSection | titlecase }}</h1>
+      </div>
+      <div class="header-right">
+        <button class="view-website-btn" (click)="goToWebsite()">View Website</button>
+      </div>
+    </header>
+
+    <div class="admin-content">
+
+      <ng-container *ngIf="activeSection === 'dashboard'">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon leads"><i class="fas fa-chart-line"></i></div>
+            <div class="stat-info">
+              <div class="stat-value">{{ stats.totalLeads || 0 }}</div>
+              <div class="stat-label">Leads This Month</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon listings"><i class="fas fa-building"></i></div>
+            <div class="stat-info">
+              <div class="stat-value">{{ stats.activeListings || stats.totalProperties || 0 }}</div>
+              <div class="stat-label">Active Listings</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon enquiries"><i class="fas fa-user-clock"></i></div>
+            <div class="stat-info">
+              <div class="stat-value">{{ stats.totalEnquiries || 0 }}</div>
+              <div class="stat-label">Awaiting Response</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon value"><i class="fas fa-coins"></i></div>
+            <div class="stat-info">
+              <div class="stat-value">KES {{ (stats.pipelineValue || 0) | number }}</div>
+              <div class="stat-label">Pipeline Value</div>
+            </div>
+          </div>
+        </div>
+        <div class="admin-actions">
+          <h2>Quick Actions</h2>
+          <div class="actions-grid">
+            <div class="action-card" (click)="setSection('listings'); openAddProperty()">
+              <i class="fas fa-plus-circle"></i>
+              <h3>Add Property</h3>
+              <p>Create a new listing</p>
+            </div>
+            <div class="action-card" (click)="setSection('leads')">
+              <i class="fas fa-users"></i>
+              <h3>View Leads</h3>
+              <p>See incoming leads</p>
+            </div>
+            <div class="action-card" (click)="setSection('analytics')">
+              <i class="fas fa-chart-bar"></i>
+              <h3>Analytics</h3>
+              <p>View performance</p>
+            </div>
+            <div class="action-card" (click)="setSection('settings')">
+              <i class="fas fa-cog"></i>
+              <h3>Settings</h3>
+              <p>Configure site</p>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="activeSection === 'leads'">
+        <div class="leads-toolbar">
+          <div class="search-wrap">
+            <i class="fas fa-search"></i>
+            <input type="text" [(ngModel)]="leadSearch" (input)="filterLeads()" placeholder="Search by name, phone, email...">
+          </div>
+          <select [(ngModel)]="leadStatusFilter" (change)="filterLeads()">
+            <option value="">All Statuses</option>
+            <option *ngFor="let s of leadStatuses" [value]="s">{{ s | titlecase }}</option>
+          </select>
+          <select [(ngModel)]="leadTypeFilter" (change)="filterLeads()">
+            <option value="">All Types</option>
+            <option value="BUY">Buy</option>
+            <option value="SELL">Sell</option>
+            <option value="RENT">Rent</option>
+            <option value="VALUATION">Valuation</option>
+          </select>
+          <button class="btn-export" (click)="exportLeadsCSV()">
+            <i class="fas fa-download"></i> Export CSV
+          </button>
+        </div>
+
+        <div class="leads-count">{{ filteredLeads.length }} leads</div>
+
+        <div class="leads-table-wrap">
+          <table class="leads-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Enquiry Type</th>
+                <th>Property</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let lead of filteredLeads">
+                <td class="lead-name">{{ lead.fullName }}</td>
+                <td class="lead-phone">{{ lead.phone }}</td>
+                <td>{{ lead.enquiryType | titlecase }}</td>
+                <td class="lead-property">{{ lead.propertyTitle || '—' }}</td>
+                <td>
+                  <div class="status-wrap">
+                    <span class="status-badge" [class]="'s-' + (lead.status?.toLowerCase() || 'new')">
+                      {{ lead.status || 'New' }}
+                    </span>
+                    <select class="status-select" [ngModel]="lead.status" (ngModelChange)="updateLeadStatus(lead, $event)">
+                      <option *ngFor="let s of leadStatuses" [value]="s">{{ s | titlecase }}</option>
+                    </select>
+                  </div>
+                </td>
+                <td>{{ lead.createdAt | date:'dd/MM/yyyy' }}</td>
+                <td>
+                  <div class="lead-actions">
+                    <button class="action-wa" (click)="openWhatsAppLead(lead.phone, lead.fullName)" title="WhatsApp">
+                      <i class="fab fa-whatsapp"></i>
+                    </button>
+                    <button class="action-del" (click)="deleteLead(lead.id)" title="Delete">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr *ngIf="filteredLeads.length === 0">
+                <td colspan="7" class="empty-row">No leads found</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="activeSection === 'listings'">
+        <div class="listings-toolbar" *ngIf="!showPropertyForm">
+          <div class="search-wrap">
+            <i class="fas fa-search"></i>
+            <input type="text" [(ngModel)]="propertySearchTerm" (input)="filterProperties()" placeholder="Search properties...">
+          </div>
+          <button class="btn-add-property" (click)="openAddProperty()">
+            <i class="fas fa-plus"></i> Add Property
+          </button>
+        </div>
+
+        <div class="property-form-wrap" *ngIf="showPropertyForm">
+          <div class="form-header">
+            <h2>{{ editingProperty ? 'Edit Property' : 'Add New Property' }}</h2>
+            <button class="btn-close-form" (click)="closePropertyForm()">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+
+          <div class="property-form">
+            <div class="form-grid">
+              <div class="form-group full">
+                <label>Property Title *</label>
+                <input type="text" [(ngModel)]="propertyForm.title" placeholder="e.g. Stunning 3-Bedroom Villa in Karen">
+              </div>
+              <div class="form-group">
+                <label>Transaction Type *</label>
+                <select [(ngModel)]="propertyForm.transactionType">
+                  <option value="">Select...</option>
+                  <option *ngFor="let t of transactionTypes" [value]="t">{{ t | titlecase }}</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Property Type *</label>
+                <select [(ngModel)]="propertyForm.propertyType">
+                  <option value="">Select...</option>
+                  <option *ngFor="let t of propertyTypes" [value]="t">{{ t | titlecase }}</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Location / Area *</label>
+                <input type="text" [(ngModel)]="propertyForm.location" placeholder="e.g. Karen, Nairobi">
+              </div>
+              <div class="form-group">
+                <label>Estate / Estate Name</label>
+                <input type="text" [(ngModel)]="propertyForm.estate" placeholder="e.g. Karen Estate">
+              </div>
+              <div class="form-group">
+                <label>Price (KES) *</label>
+                <input type="number" [(ngModel)]="propertyForm.price" placeholder="e.g. 15000000">
+              </div>
+              <div class="form-group">
+                <label>Bedrooms</label>
+                <input type="number" [(ngModel)]="propertyForm.bedrooms" placeholder="e.g. 3">
+              </div>
+              <div class="form-group">
+                <label>Bathrooms</label>
+                <input type="number" [(ngModel)]="propertyForm.bathrooms" placeholder="e.g. 2">
+              </div>
+              <div class="form-group">
+                <label>Land Size (m²)</label>
+                <input type="number" [(ngModel)]="propertyForm.landSize" placeholder="e.g. 500">
+              </div>
+              <div class="form-group full">
+                <label>Description</label>
+                <textarea [(ngModel)]="propertyForm.description" rows="4" placeholder="Describe the property..."></textarea>
+              </div>
+              <div class="form-group full">
+                <label class="checkbox-label">
+                  <input type="checkbox" [(ngModel)]="propertyForm.featured">
+                  Feature this property on homepage
+                </label>
+              </div>
+            </div>
+
+            <div class="media-section">
+              <div class="media-group">
+                <label class="media-label"><i class="fas fa-images"></i> Property Images</label>
+                <div class="media-upload-area" (click)="imageInput.click()">
+                  <i class="fas fa-cloud-upload-alt"></i>
+                  <span>Click to upload images</span>
+                  <small>JPG, PNG, WEBP — multiple allowed</small>
+                </div>
+                <input #imageInput type="file" accept="image/*" multiple (change)="onImagesSelected($event)" style="display:none">
+                <div class="image-previews" *ngIf="imagePreviewUrls.length > 0">
+                  <div class="preview-item" *ngFor="let url of imagePreviewUrls; let i = index">
+                    <img [src]="url" alt="preview">
+                    <button class="remove-preview" (click)="removeImagePreview(i)"><i class="fas fa-times"></i></button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="media-group">
+                <label class="media-label"><i class="fas fa-video"></i> Property Videos</label>
+                <div class="media-upload-area" (click)="videoInput.click()">
+                  <i class="fas fa-cloud-upload-alt"></i>
+                  <span>Click to upload videos</span>
+                  <small>MP4, MOV — multiple allowed</small>
+                </div>
+                <input #videoInput type="file" accept="video/*" multiple (change)="onVideosSelected($event)" style="display:none">
+                <div class="video-list" *ngIf="videoPreviewUrls.length > 0">
+                  <div class="video-item" *ngFor="let name of videoPreviewUrls">
+                    <i class="fas fa-film"></i> {{ name }}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button class="btn-cancel" (click)="closePropertyForm()">Cancel</button>
+              <button class="btn-save" (click)="saveProperty()" [disabled]="propertySaving">
+                <i class="fas fa-save"></i>
+                {{ propertySaving ? 'Saving...' : (editingProperty ? 'Update Property' : 'Create Property') }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="properties-table-wrap" *ngIf="!showPropertyForm">
+          <table class="properties-table">
+            <thead>
+              <tr>
+                <th>Property</th>
+                <th>Type</th>
+                <th>Transaction</th>
+                <th>Price</th>
+                <th>Location</th>
+                <th>Featured</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let p of filteredProperties">
+                <td>
+                  <div class="prop-cell">
+                    <img [src]="p.featuredImage || 'assets/images/Dream House.jpg'" [alt]="p.title">
+                    <span>{{ p.title }}</span>
+                  </div>
+                </td>
+                <td>{{ p.propertyType | titlecase }}</td>
+                <td><span class="tx-badge" [class.sale]="p.transactionType==='SALE'">{{ p.transactionType }}</span></td>
+                <td>{{ formatPrice(p.price) }}</td>
+                <td>{{ p.location }}</td>
+                <td>
+                  <span class="featured-badge" *ngIf="p.featured"><i class="fas fa-star"></i></span>
+                  <span class="not-featured" *ngIf="!p.featured">—</span>
+                </td>
+                <td>
+                  <div class="prop-actions">
+                    <button class="btn-edit" (click)="openEditProperty(p)"><i class="fas fa-edit"></i></button>
+                    <button class="btn-del" (click)="deleteProperty(p.id)"><i class="fas fa-trash"></i></button>
+                  </div>
+                </td>
+              </tr>
+              <tr *ngIf="filteredProperties.length === 0 && !propertyLoading">
+                <td colspan="7" class="empty-row">No properties found</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </ng-container>
+
+     <ng-container *ngIf="activeSection === 'analytics'">
+  <div class="analytics-wrap">
+
+    <!-- Lead Volume -->
+    <div class="card">
+      <h3>Daily Lead Volume</h3>
+      <canvas id="leadChart"></canvas>
+    </div>
+
+    <!-- Bottom charts -->
+    <div class="chart-grid">
+      <div class="card">
+        <h3>Enquiry Types</h3>
+        <canvas id="enquiryChart"></canvas>
+      </div>
+
+      <div class="card">
+        <h3>Lead Sources</h3>
+        <canvas id="sourceChart"></canvas>
+      </div>
+    </div>
+
+  </div>
+</ng-container>
+
+      <ng-container *ngIf="activeSection === 'settings'">
+        <div class="settings-wrap">
+          <div class="success-toast" *ngIf="settingsSaved">
+            <i class="fas fa-check-circle"></i> Settings saved successfully
+          </div>
+
+          <div class="settings-card">
+            <h3><i class="fas fa-building"></i> Company Information</h3>
+            <div class="settings-fields">
+              <div class="field-group">
+                <label>Company Name</label>
+                <input type="text" [(ngModel)]="settings.companyName">
+              </div>
+              <div class="field-group">
+                <label>Physical Address</label>
+                <input type="text" [(ngModel)]="settings.physicalAddress">
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <h3><i class="fas fa-phone"></i> Contact Channels</h3>
+            <div class="settings-fields">
+              <div class="field-group">
+                <label>WhatsApp Number (with country code)</label>
+                <input type="text" [(ngModel)]="settings.whatsappNumber" placeholder="+254700000000">
+              </div>
+              <div class="field-group">
+                <label>Business Phone</label>
+                <input type="text" [(ngModel)]="settings.businessPhone" placeholder="+254700000000">
+              </div>
+              <div class="field-group">
+                <label>Business Email</label>
+                <input type="email" [(ngModel)]="settings.businessEmail" placeholder="hello@company.co.ke">
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <h3><i class="fas fa-bell"></i> Notification Preferences</h3>
+            <div class="settings-checkboxes">
+              <label class="check-row">
+                <input type="checkbox" [(ngModel)]="settings.emailAlerts">
+                <span>Email alert for every new lead</span>
+              </label>
+              <label class="check-row">
+                <input type="checkbox" [(ngModel)]="settings.whatsappAlerts">
+                <span>WhatsApp notification for every new lead</span>
+              </label>
+            </div>
+          </div>
+
+          <button class="btn-save-settings" (click)="saveSettings()">
+            <i class="fas fa-save"></i> Save Settings
+          </button>
+        </div>
+      </ng-container>
+
+    </div>
+  </main>
+</div>

@@ -1,0 +1,105 @@
+<section class="listings-header">
+  <div class="container">
+    <h1>Find Your Perfect Property</h1>
+    <div class="search-bar">
+      <input 
+        type="text" 
+        [(ngModel)]="searchTerm" 
+        (input)="search()" 
+        placeholder="Search by area, estate, or address..." 
+        class="search-input">
+      <button class="filter-toggle" (click)="showFilters = !showFilters">
+        <i class="fas fa-filter"></i> Filters
+      </button>
+    </div>
+  </div>
+</section>
+
+<section class="listings-content">
+  <div class="container">
+    <div class="listings-layout">
+      <aside class="filters-sidebar" [class.active]="showFilters">
+        <div class="filter-group">
+          <label>Transaction Type</label>
+          <select [(ngModel)]="selectedTransactionType" (change)="search()">
+            <option value="">All</option>
+            <option *ngFor="let type of transactionTypes" [value]="type">{{ type | titlecase }}</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Property Type</label>
+          <select [(ngModel)]="selectedPropertyType" (change)="search()">
+            <option value="">All</option>
+            <option *ngFor="let type of propertyTypes" [value]="type">{{ type | titlecase }}</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Sort By</label>
+          <select [(ngModel)]="sortBy" (change)="search()">
+            <option value="newest">Newest First</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+          </select>
+        </div>
+
+        <button class="clear-filters" (click)="clearFilters()">Clear All Filters</button>
+      </aside>
+
+      <main class="properties-results">
+        <div class="results-header">
+          <span>{{ filteredProperties.length }} properties found</span>
+        </div>
+
+        <div class="properties-grid" *ngIf="!isLoading; else loadingTemplate">
+          <div class="property-card" *ngFor="let property of filteredProperties" (click)="goToPropertyDetail(property.id)">
+            <div class="property-image">
+              <video *ngIf="hasVideo(property) && !getImageUrl(property)" 
+                     [src]="property.propertyVideoUrl" 
+                     autoplay muted loop 
+                     poster="assets/images/video-Dream House.jpg"
+                     class="video-thumbnail">
+              </video>
+              <img *ngIf="!hasVideo(property) || getImageUrl(property)" 
+                   [src]="getImageUrl(property)" 
+                   [alt]="property.title" 
+                   (error)="property.featuredImage = 'assets/images/Dream House.jpg'">
+              <div class="video-overlay" *ngIf="hasVideo(property) && !getImageUrl(property)">
+                <i class="fas fa-play-circle"></i>
+              </div>
+              <span class="property-badge" [class.for-sale]="property.transactionType === 'SALE'" [class.for-rent]="property.transactionType === 'RENT'">
+                {{ property.transactionType === 'SALE' ? 'For Sale' : 'To Let' }}
+              </span>
+            </div>
+            <div class="property-details">
+              <h3>{{ property.title }}</h3>
+              <p class="property-location">{{ property.location }}</p>
+              <p class="property-price">KES {{ property.price | number }}</p>
+              <div class="property-features">
+                <span *ngIf="property.bedrooms"><i class="fas fa-bed"></i> {{ property.bedrooms }}</span>
+                <span *ngIf="property.bathrooms"><i class="fas fa-bath"></i> {{ property.bathrooms }}</span>
+                <span *ngIf="property.landSize"><i class="fas fa-vector-square"></i> {{ property.landSize }}m²</span>
+              </div>
+              <button class="whatsapp-btn" (click)="openWhatsApp($event, property)">
+                <i class="fab fa-whatsapp"></i> Quick WhatsApp Enquiry
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="no-results" *ngIf="!isLoading && filteredProperties.length === 0">
+          <p>No properties found matching your criteria.</p>
+          <button (click)="clearFilters()">Clear Filters</button>
+        </div>
+
+        <ng-template #loadingTemplate>
+          <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Loading properties...</p>
+          </div>
+        </ng-template>
+      </main>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,41 @@
+<section class="services-hero">
+  <div class="container">
+    <h1>Our Services</h1>
+    <p>Comprehensive real estate solutions tailored to your needs</p>
+  </div>
+</section>
+
+<section class="services-grid">
+  <div class="container">
+    <div class="services-list">
+      <div class="service-card" *ngFor="let service of services">
+        <div class="service-icon">
+          <i class="fas {{ service.icon }}"></i>
+        </div>
+        <h3>{{ service.name }}</h3>
+        <p>{{ service.description }}</p>
+        <button class="service-btn" (click)="openRequestForm(service.type, service.name)">
+          {{ service.button }} →
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="modal" *ngIf="showRequestForm" (click)="closeRequestForm()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ selectedService }} Request</h2>
+      <button class="close-btn" (click)="closeRequestForm()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <input type="text" [(ngModel)]="request.fullName" placeholder="Full Name *" required>
+      <input type="email" [(ngModel)]="request.email" placeholder="Email Address *" required>
+      <input type="tel" [(ngModel)]="request.phone" placeholder="Phone Number *" required>
+      <input type="text" [(ngModel)]="request.propertyAddress" placeholder="Property Address (if applicable)">
+      <input type="number" [(ngModel)]="request.estimatedValue" placeholder="Estimated Property Value (KES)">
+      <textarea [(ngModel)]="request.message" placeholder="Additional Details" rows="5"></textarea>
+      <button class="submit-btn" (click)="submitRequest()">Submit Request</button>
+    </div>
+  </div>
+</div>

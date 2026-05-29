@@ -1,0 +1,163 @@
+<div class="property-detail" *ngIf="!isLoading && property; else loadingTemplate">
+  <div class="container">
+    <button class="back-btn" (click)="goBack()">
+      <i class="fas fa-arrow-left"></i> Back to Listings
+    </button>
+
+    <div class="property-header">
+      <h1>{{ property.title }}</h1>
+      <div class="property-meta">
+        <span class="badge" [class.for-sale]="property.transactionType === 'SALE'" [class.for-rent]="property.transactionType === 'RENT'">
+          {{ property.transactionType === 'SALE' ? 'For Sale' : 'To Let' }}
+        </span>
+        <span class="price">KES {{ property.price | number }}</span>
+        <span class="location">
+          <i class="fas fa-map-marker-alt"></i> {{ property.location }}, {{ property.estate }}
+        </span>
+      </div>
+    </div>
+
+    <div class="property-gallery">
+      <div class="main-image">
+        <button class="nav-btn prev" (click)="previousImage()" *ngIf="property.imageUrls.length > 1">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <img [src]="selectedImage || property.featuredImage || 'assets/images/Dream House.jpg'" [alt]="property.title">
+        <button class="nav-btn next" (click)="nextImage()" *ngIf="property.imageUrls.length > 1">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+      
+      <div class="thumbnail-grid" *ngIf="property.imageUrls && property.imageUrls.length > 0">
+        <div class="thumbnail" *ngFor="let image of property.imageUrls; let i = index" 
+             [class.active]="selectedImage === image"
+             (click)="selectImage(image, i)">
+          <img [src]="image" [alt]="property.title">
+        </div>
+      </div>
+
+      <div class="video-section" *ngIf="property.propertyVideoUrl">
+        <h3>Property Video Tour</h3>
+        <video controls [src]="property.propertyVideoUrl" class="property-video"></video>
+      </div>
+    </div>
+
+    <div class="property-info-grid">
+      <div class="property-details">
+        <h2>Property Details</h2>
+        <div class="details-grid">
+          <div class="detail-item">
+            <i class="fas fa-bed"></i>
+            <span>{{ property.bedrooms || 0 }} Bedrooms</span>
+          </div>
+          <div class="detail-item">
+            <i class="fas fa-bath"></i>
+            <span>{{ property.bathrooms || 0 }} Bathrooms</span>
+          </div>
+          <div class="detail-item">
+            <i class="fas fa-car"></i>
+            <span>{{ property.parkingSpaces || 0 }} Parking</span>
+          </div>
+          <div class="detail-item">
+            <i class="fas fa-vector-square"></i>
+            <span>{{ property.landSize || 0 }} m²</span>
+          </div>
+          <div class="detail-item" *ngIf="property.hasGarden">
+            <i class="fas fa-tree"></i>
+            <span>Garden</span>
+          </div>
+          <div class="detail-item" *ngIf="property.hasBalcony">
+            <i class="fas fa-umbrella"></i>
+            <span>Balcony</span>
+          </div>
+          <div class="detail-item" *ngIf="property.hasFurnished">
+            <i class="fas fa-couch"></i>
+            <span>Furnished</span>
+          </div>
+          <div class="detail-item">
+            <i class="fas fa-eye"></i>
+            <span>{{ property.viewCount || 0 }} Views</span>
+          </div>
+        </div>
+
+        <h2>Description</h2>
+        <p class="description">{{ property.description || 'No description available.' }}</p>
+
+        <div class="virtual-tour" *ngIf="property.virtualTourUrl">
+          <h2>Virtual Tour</h2>
+          <a [href]="property.virtualTourUrl" target="_blank" class="virtual-tour-btn">
+            <i class="fas fa-video"></i> Take 360° Virtual Tour
+          </a>
+        </div>
+      </div>
+
+      <div class="property-actions">
+        <div class="action-card">
+          <h3>Interested in this property?</h3>
+          <button class="whatsapp-btn" (click)="openWhatsApp()">
+            <i class="fab fa-whatsapp"></i> Chat on WhatsApp
+          </button>
+          <button class="enquiry-btn" (click)="showEnquiryForm = !showEnquiryForm">
+            <i class="fas fa-envelope"></i> Send Enquiry
+          </button>
+
+          <div class="enquiry-form" *ngIf="showEnquiryForm">
+            <input type="text" [(ngModel)]="enquiry.fullName" placeholder="Your Full Name *">
+            <input type="email" [(ngModel)]="enquiry.email" placeholder="Your Email *">
+            <input type="tel" [(ngModel)]="enquiry.phone" placeholder="Your Phone Number *">
+            <textarea [(ngModel)]="enquiry.message" placeholder="Your Message" rows="4"></textarea>
+            <label class="checkbox">
+              <input type="checkbox" [(ngModel)]="enquiry.isWhatsappEnabled">
+              Also contact me on WhatsApp
+            </label>
+            <button class="submit-btn" (click)="submitEnquiry()">Submit Enquiry</button>
+          </div>
+        </div>
+
+        <div class="stats-card">
+          <div class="stat">
+            <span class="stat-value">{{ property.viewCount || 0 }}</span>
+            <span class="stat-label">Views</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value">{{ property.enquiryCount || 0 }}</span>
+            <span class="stat-label">Enquiries</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="related-properties" *ngIf="relatedProperties.length > 0">
+      <h2>Similar Properties You Might Like</h2>
+      <div class="related-grid">
+        <div class="related-card" *ngFor="let related of relatedProperties" (click)="goToProperty(related.id)">
+          <div class="related-image">
+            <img [src]="getImageUrl(related)" [alt]="related.title">
+            <span class="related-badge" [class.for-sale]="related.transactionType === 'SALE'" [class.for-rent]="related.transactionType === 'RENT'">
+              {{ related.transactionType === 'SALE' ? 'For Sale' : 'To Let' }}
+            </span>
+          </div>
+          <div class="related-details">
+            <h4>{{ related.title }}</h4>
+            <p class="related-price">KES {{ related.price | number }}</p>
+            <p class="related-location">{{ related.location }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #loadingTemplate>
+  <div class="loading-container">
+    <div class="spinner"></div>
+    <p>Loading property details...</p>
+  </div>
+</ng-template>
+
+<div class="error-container" *ngIf="error">
+  <div class="container">
+    <h2>{{ error }}</h2>
+    <button class="back-btn" (click)="goBack()">Back to Listings</button>
+  </div>
+</div>

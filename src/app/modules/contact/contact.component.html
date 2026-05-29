@@ -1,0 +1,85 @@
+<section class="contact-hero">
+  <div class="container">
+    <h1>Contact Us</h1>
+    <p>Get in touch with our team for any inquiries</p>
+  </div>
+</section>
+
+<section class="contact-content">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="contact-info">
+        <h2>Get In Touch</h2>
+        <div class="info-item">
+          <i class="fas fa-map-marker-alt"></i>
+          <div>
+            <h4>Visit Us</h4>
+            <p>Westlands, Nairobi, Kenya</p>
+          </div>
+        </div>
+        <div class="info-item">
+          <i class="fas fa-phone"></i>
+          <div>
+            <h4>Call Us</h4>
+            <p>+254 719 127 100</p>
+          </div>
+        </div>
+        <div class="info-item">
+          <i class="fas fa-envelope"></i>
+          <div>
+            <h4>Email Us</h4>
+            <p>info&#64;jakimaestate.com</p>
+          </div>
+        </div>
+        <div class="info-item">
+          <i class="fab fa-whatsapp"></i>
+          <div>
+            <h4>WhatsApp</h4>
+            <p>+254 719 127 100</p>
+          </div>
+        </div>
+
+        <div class="social-links">
+          <a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
+          <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+          <a href="#" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+
+        <button class="whatsapp-chat" (click)="openWhatsApp()">
+          <i class="fab fa-whatsapp"></i> Chat on WhatsApp
+        </button>
+      </div>
+
+      <div class="contact-form">
+        <div class="success-message" *ngIf="submitted">
+          <i class="fas fa-check-circle"></i>
+          <p>Thank you for contacting us! We'll get back to you soon.</p>
+        </div>
+        
+        <form (ngSubmit)="submitContact()" *ngIf="!submitted">
+          <input type="text" [(ngModel)]="enquiry.fullName" name="fullName" placeholder="Your Full Name *" required>
+          <input type="email" [(ngModel)]="enquiry.email" name="email" placeholder="Your Email *" required>
+          <input type="tel" [(ngModel)]="enquiry.phone" name="phone" placeholder="Your Phone Number *" required>
+          <textarea [(ngModel)]="enquiry.message" name="message" placeholder="Your Message *" rows="5" required></textarea>
+          <label class="checkbox">
+            <input type="checkbox" [(ngModel)]="enquiry.isWhatsappEnabled" name="whatsapp">
+            Also contact me on WhatsApp
+          </label>
+          <button type="submit">Send Message</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="contact-map">
+  <iframe 
+    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.7868827285467!2d36.800624!3d-1.264193!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f174d7f2e5d5b%3A0x8e5f5c5c5c5c5c5c!2sWestlands%2C%20Nairobi!5e0!3m2!1sen!2ske!4v1700000000000!5m2!1sen!2ske" 
+    width="100%" 
+    height="400" 
+    style="border:0;" 
+    allowfullscreen="" 
+    loading="lazy">
+  </iframe>
+</section>

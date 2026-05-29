@@ -1,0 +1,142 @@
+.about-hero {
+  background: linear-gradient(135deg, #1a472a 0%, #0d2818 100%);
+  padding: 80px 0;
+  text-align: center;
+  color: white;
+
+  h1 {
+    font-size: 48px;
+    margin-bottom: 15px;
+  }
+
+  p {
+    font-size: 18px;
+    opacity: 0.9;
+  }
+}
+
+.about-story {
+  padding: 80px 0;
+  background: white;
+
+  .story-content {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+
+    h2 {
+      font-size: 32px;
+      color: #1a472a;
+      margin-bottom: 20px;
+    }
+
+    p {
+      color: #666;
+      line-height: 1.8;
+      margin-bottom: 20px;
+    }
+  }
+
+  .story-stats {
+    display: flex;
+    justify-content: center;
+    gap: 60px;
+    margin-top: 60px;
+
+    .stat {
+      text-align: center;
+
+      .stat-number {
+        font-size: 48px;
+        font-weight: 700;
+        color: #1a472a;
+      }
+
+      .stat-label {
+        color: #666;
+        margin-top: 10px;
+      }
+    }
+  }
+}
+
+.about-stats {
+  background: #f8f9fa;
+  padding: 60px 0;
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    text-align: center;
+
+    .stat-card {
+      .stat-value {
+        font-size: 42px;
+        font-weight: 700;
+        color: #1a472a;
+      }
+
+      .stat-name {
+        color: #666;
+        margin-top: 10px;
+      }
+    }
+  }
+}
+
+.about-mission {
+  padding: 80px 0;
+  background: white;
+
+  .mission-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+
+    .mission-card {
+      text-align: center;
+      padding: 30px;
+      background: #f8f9fa;
+      border-radius: 12px;
+      transition: all 0.3s;
+
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      }
+
+      i {
+        font-size: 48px;
+        color: #1a472a;
+        margin-bottom: 20px;
+      }
+
+      h3 {
+        font-size: 22px;
+        color: #1a472a;
+        margin-bottom: 15px;
+      }
+
+      p {
+        color: #666;
+        line-height: 1.6;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .about-story .story-stats {
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .about-stats .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .about-mission .mission-grid {
+    grid-template-columns: 1fr;
+  }
+}

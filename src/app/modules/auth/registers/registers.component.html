@@ -1,0 +1,40 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <h2>Create Account</h2>
+    <p>Join Jakima Properties today</p>
+    
+    <form (ngSubmit)="onSubmit()">
+      <input 
+        type="text" 
+        [(ngModel)]="userData.fullName" 
+        name="fullName"
+        placeholder="Full Name" 
+        required>
+      <input 
+        type="email" 
+        [(ngModel)]="userData.email" 
+        name="email"
+        placeholder="Email Address" 
+        required>
+      <input 
+        type="tel" 
+        [(ngModel)]="userData.phone" 
+        name="phone"
+        placeholder="Phone Number" 
+        required>
+      <input 
+        type="password" 
+        [(ngModel)]="userData.password" 
+        name="password"
+        placeholder="Password" 
+        required>
+      <button type="submit" [disabled]="loading">
+        {{ loading ? 'Registering...' : 'Register' }}
+      </button>
+    </form>
+    
+    <p class="auth-link">
+      Already have an account? <a routerLink="/auth/login">Login</a>
+    </p>
+  </div>
+</div>

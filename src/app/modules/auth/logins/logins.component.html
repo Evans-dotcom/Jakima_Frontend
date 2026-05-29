@@ -1,0 +1,28 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <h2>Welcome Back</h2>
+    <p>Login to your Jakima Properties account</p>
+    
+    <form (ngSubmit)="onSubmit()">
+      <input 
+        type="email" 
+        [(ngModel)]="credentials.email" 
+        name="email"
+        placeholder="Email Address" 
+        required>
+      <input 
+        type="password" 
+        [(ngModel)]="credentials.password" 
+        name="password"
+        placeholder="Password" 
+        required>
+      <button type="submit" [disabled]="loading">
+        {{ loading ? 'Logging in...' : 'Login' }}
+      </button>
+    </form>
+    
+    <p class="auth-link">
+      Don't have an account? <a routerLink="/auth/register">Register</a>
+    </p>
+  </div>
+</div>

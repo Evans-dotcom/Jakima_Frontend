@@ -1,0 +1,61 @@
+<nav class="navbar">
+  <div class="container">
+    <div class="navbar-brand">
+      <a routerLink="/" class="logo">
+        <i class="fas fa-home"></i>
+        Jakima <span>Properties</span>
+      </a>
+      <button class="mobile-menu-btn" (click)="toggleMobileMenu()">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+
+    <div class="navbar-menu" [class.active]="mobileMenuOpen">
+      <ng-container *ngIf="!isAdminPage">
+        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" (click)="mobileMenuOpen=false">Home</a>
+        <a routerLink="/listings" routerLinkActive="active" (click)="mobileMenuOpen=false">Listings</a>
+        <a routerLink="/services" routerLinkActive="active" (click)="mobileMenuOpen=false">Services</a>
+        <a routerLink="/about" routerLinkActive="active" (click)="mobileMenuOpen=false">About</a>
+        <a routerLink="/contact" routerLinkActive="active" (click)="mobileMenuOpen=false">Contact</a>
+        <a *ngIf="isAdmin" routerLink="/admin" routerLinkActive="active" (click)="mobileMenuOpen=false">Admin</a>
+      </ng-container>
+
+      <div class="navbar-auth">
+        <ng-container *ngIf="!isLoggedIn">
+          <a routerLink="/auth/login" class="btn-login" (click)="mobileMenuOpen=false">Login</a>
+          <a routerLink="/auth/register" class="btn-register" (click)="mobileMenuOpen=false">Register</a>
+        </ng-container>
+
+        <ng-container *ngIf="isLoggedIn">
+          <div class="profile-wrapper">
+            <button class="profile-btn" (click)="toggleProfileDropdown()">
+              <div class="avatar">{{ getInitials() }}</div>
+              <i class="fas fa-chevron-down" [class.rotated]="profileDropdownOpen"></i>
+            </button>
+
+            <div class="profile-dropdown" [class.open]="profileDropdownOpen">
+              <div class="dropdown-header">
+                <div class="avatar large">{{ getInitials() }}</div>
+                <div class="dropdown-user-info">
+                  <span class="dropdown-name">{{ user?.fullName }}</span>
+                  <span class="dropdown-email">{{ user?.email }}</span>
+                </div>
+              </div>
+              <div class="dropdown-divider"></div>
+              <a routerLink="/dashboard" class="dropdown-item" (click)="profileDropdownOpen=false; mobileMenuOpen=false">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+              </a>
+              <a *ngIf="isAdmin" routerLink="/admin" class="dropdown-item" (click)="profileDropdownOpen=false; mobileMenuOpen=false">
+                <i class="fas fa-shield-alt"></i> Admin Panel
+              </a>
+              <div class="dropdown-divider"></div>
+              <button class="dropdown-item logout" (click)="logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+              </button>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</nav>

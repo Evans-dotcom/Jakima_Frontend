@@ -1,0 +1,52 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  color: #333;
+  background: white;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+img {
+  max-width: 100%;
+}
+
+button {
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: #1a472a;
+  color: white;
+  
+  &:hover {
+    background: #0d2818;
+  }
+}
+
+.btn-whatsapp {
+  background: #25d366;
+  color: white;
+  
+  &:hover {
+    background: #128C7E;
+  }
+}

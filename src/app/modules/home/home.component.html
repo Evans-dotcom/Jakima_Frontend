@@ -1,0 +1,139 @@
+<section class="hero">
+  <div class="container">
+    <div class="hero-content">
+      <h1>Find Your Dream <span>Home</span> in Kenya</h1>
+      <p class="hero-subtitle">Thousands of verified properties in Nairobi and beyond. Your perfect home is just a search away.</p>
+      
+      <div class="transaction-buttons">
+        <button class="btn-transaction" [class.active]="searchParams.transactionType === 'SALE'" (click)="setTransactionType('SALE')">Buy</button>
+        <button class="btn-transaction" [class.active]="searchParams.transactionType === 'RENT'" (click)="setTransactionType('RENT')">Rent</button>
+        <button class="btn-transaction" [class.active]="searchParams.transactionType === 'SALE'" (click)="setTransactionType('SALE')">Sell</button>
+      </div>
+      
+      <div class="search-box">
+        <div class="search-input-group">
+          <input type="text" [(ngModel)]="searchParams.location" placeholder="Search by area, estate, or address..." class="search-input">
+          <select [(ngModel)]="searchParams.propertyType" class="search-select">
+            <option value="">Property type</option>
+            <option *ngFor="let type of propertyTypes" [value]="type">{{ type | titlecase }}</option>
+          </select>
+          <button class="search-btn" (click)="search()">
+            <i class="fas fa-search"></i> Search
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="stats">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number">{{ stats.totalProperties || 1200 }}+</div>
+        <div class="stat-label">Properties Listed</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{ stats.totalHappyClients || 3800 }}+</div>
+        <div class="stat-label">Happy Clients</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{ stats.yearsInMarket || 10 }}+</div>
+        <div class="stat-label">Years in Market</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{ stats.estatesCovered || 47 }}+</div>
+        <div class="stat-label">Nairobi Estates Covered</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="featured">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-header-left">
+        <p class="section-tag">FRESH ON THE MARKET</p>
+        <h2>Featured Properties</h2>
+      </div>
+      <a routerLink="/listings" class="view-all">View All</a>
+    </div>
+
+    <div class="properties-grid">
+      <div class="property-card" *ngFor="let property of featuredProperties" (click)="goToProperty(property.id)">
+        <div class="property-image">
+          <img [src]="property.featuredImage || 'assets/images/Dream House.jpg'" [alt]="property.title" (error)="property.featuredImage = 'assets/images/Dream House.jpg'">
+          <span class="property-badge" [class.for-sale]="property.transactionType === 'SALE'" [class.for-rent]="property.transactionType === 'RENT'">
+            {{ property.transactionType === 'SALE' ? 'For Sale' : 'To Let' }}
+          </span>
+          <button class="wishlist-btn" (click)="$event.stopPropagation()">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+        <div class="property-details">
+          <p class="property-price">KES {{ property.price | number }}</p>
+          <h3>{{ property.title }}</h3>
+          <p class="property-location"><i class="fas fa-map-marker-alt"></i> {{ property.location }}</p>
+          <div class="property-divider"></div>
+          <div class="property-features">
+            <span *ngIf="property.bedrooms"><i class="fas fa-bed"></i> {{ property.bedrooms }} Beds</span>
+            <span *ngIf="property.bathrooms"><i class="fas fa-bath"></i> {{ property.bathrooms }} Baths</span>
+            <span *ngIf="property.landSize"><i class="fas fa-vector-square"></i> {{ property.landSize }} m²</span>
+          </div>
+          <button class="whatsapp-btn" (click)="openWhatsApp($event, property)">
+            <i class="fab fa-whatsapp"></i> Quick WhatsApp Enquiry
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="categories">
+  <div class="container">
+    <h2>What Are You Looking For?</h2>
+    <div class="categories-grid">
+      <div class="category-card" (click)="filterByCategory('apartments')">
+        <div class="category-icon">🏢</div>
+        <h3>Apartments</h3>
+        <p>A modern, well-lit apartment with a balcony and a view of the city.</p>
+      </div>
+      <div class="category-card" (click)="filterByCategory('houses')">
+        <div class="category-icon">🏡</div>
+        <h3>Houses</h3>
+        <p>A cozy house with a large garden and a peaceful atmosphere.</p>
+      </div>
+      <div class="category-card" (click)="filterByCategory('land')">
+        <div class="category-icon">🌱</div>
+        <h3>Land</h3>
+        <p>A vast piece of land for sale, perfect for building a new home or business.</p>
+      </div>
+      <div class="category-card" (click)="filterByCategory('commercial')">
+        <div class="category-icon">🏢</div>
+        <h3>Commercial</h3>
+        <p>A sleek commercial building with a modern design.</p>
+      </div>
+      <div class="category-card" (click)="filterByCategory('new-developments')">
+        <div class="category-icon">🏘️</div>
+        <h3>New Developments</h3>
+        <p>A newly built residential complex with a unique design.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="testimonials">
+  <div class="container">
+    <h2>Client Stories</h2>
+    <h3>What Our Clients Say</h3>
+    <div class="testimonials-grid">
+      <div class="testimonial-card" *ngFor="let testimonial of testimonials">
+        <p class="testimonial-content">"{{ testimonial.content }}"</p>
+        <div class="testimonial-rating">
+          <i class="fas fa-star" *ngFor="let star of [].constructor(testimonial.rating)"></i>
+        </div>
+        <div class="testimonial-author">- {{ testimonial.clientName }}</div>
+      </div>
+    </div>
+  </div>
+</section>
